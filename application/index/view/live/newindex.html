@@ -1,0 +1,323 @@
+{extend name="base_wx" /}
+{block name="stylesheets"}
+<title>CodingFly</title>
+<link href='{Resource:path src="static/libs/thirdparty/vas/swiper.min.css"/}' rel="stylesheet">
+<!-- <link rel="stylesheet" href='{Resource:path src="static/js/dist/dropload.css"/}' type="text/css"/> 重复了，在newindex.css有定义 -->  
+<link rel="stylesheet" href='{Resource:path src="static/css/live/newIndex.css?ver=qsfb_4"/}' type="text/css"/>
+{/block}
+{block name="body"}
+    <div class="wxcontent" style="padding-bottom: 60px;" v-cloak> 
+        <div class="wxLiveIndexTop">
+            <ul id="wxLiveIndexNav" class="wxLiveIndexNav clear"><!--1关注，2最新，3最热，4直播，5视频，6日报，7文章，8项目，10招聘-->
+                <li @click="liveSortType(1)" v-bind="{class:sorttype ==1?'wxLiveIndexNavActive':''}">关注</li>
+                <li @click="liveSortType(2)" v-bind="{class:sorttype ==2?'wxLiveIndexNavActive':''}">最新</li>
+<!--                <li @click="liveSortType(3)" v-bind="{class:sorttype ==3?'wxLiveIndexNavActive':''}">最热</li>-->
+                <li @click="liveSortType(6)" v-bind="{class:sorttype ==6?'wxLiveIndexNavActive':''}">日报</li>
+                <li @click="liveSortType(7)" v-bind="{class:sorttype ==7?'wxLiveIndexNavActive':''}">文章</li>
+<!--                <li @click="liveSortType(8)" v-bind="{class:sorttype ==8?'wxLiveIndexNavActive':''}">项目</li>-->
+                <li @click="liveSortType(10)" v-bind="{class:sorttype ==10?'wxLiveIndexNavActive':''}">招聘</li>
+                <li @click="liveSortType(4)" v-bind="{class:sorttype ==4?'wxLiveIndexNavActive':''}">直播</li>
+                <li @click="liveSortType(5)" v-bind="{class:sorttype ==5?'wxLiveIndexNavActive':''}">视频</li>
+            </ul>
+        </div>
+        <!--    banner-->
+        <div class="banner-box">
+            <div class="swiper-inner"  v-if="sorttype ==2 || sorttype ==3">
+            <!-- swiper -->
+                <swiper ref="awesomeSwiperB" :options="swiperOptionB" class="banner">
+                    {volist name="banner" id="type"}
+                    <swiper-slide onclick="window.location.href='{$type.superlink?$type.superlink:\'javascript:;'\}'">
+                        <img src="{$type.image_url}" alt="...">
+                    </swiper-slide>
+                    {/volist}
+                    <div class="swiper-pagination" slot="pagination"></div>
+                </swiper>
+            </div>
+        </div>
+        <!--    推荐专家-->
+        <div v-if="sorttype ==2 || sorttype ==3">
+            <h4 class="ltitle"><strong>推荐专家</strong></h4>
+            <div class="relist">
+                <swiper :options="swiperOptionC">
+                    <swiper-slide v-for="item in reList">
+                        <div class="reuser" @click="toUser(item.userid)">
+                            <img class="pavatar" :src="item.avatar" alt="...">
+                            <img class="pframe" src='{Resource:path src="static/images/user/zj@2x.png"/}' alt="...">
+                            <p v-text="item.nickname"></p>
+                        </div>
+                    </swiper-slide>
+                </swiper>
+            </div>
+            <h4 class="ltitle"><strong>内容精选</strong></h4>
+        </div>
+        <div id="lodingimg" v-if="markresp==0">
+            <!-- <div class="dropload-load"><span class="loading"></span>加载中...</div> -->
+        </div>
+        <div v-else class="khfxWarp">
+            <div   v-for="groupcount in groupcounts">
+                <p class="noText" v-if="total==0">
+                    <img src='{Resource:path src="static/images/live/nolist.png"/}' />
+                </p>
+                <div class="clear loaded" v-else>
+
+                    <!-- 文章 3个 -->
+                    <div class="_forum _alldiv">
+                        <ul class="_listul">
+                            <li v-for="infolist in forumlists5[groupcount-1]" v-bind='{code:infolist.id}' 
+                            @click="jumpForumDetail(infolist.id)">
+                                <div class="_blank"></div>
+                                <div class="_li _border" style="min-height:10em;">
+                                    <div class="_title">
+                                        <span class="_img"><img v-bind="{src:infolist.userheadurl}"></span>
+                                        <span class="_name spanhidder" v-text="infolist.username"></span>
+                                    </div>
+                                       <div class="_category"><img src='{Resource:path src="static/images/newLive/project@2x.png"/}' v-if="infolist.category==2"></div>
+                                    <div class="_hr">
+                                        <hr>
+                                    </div>
+                                    <div class="_body" v-bind="{style:infolist.cover ? '' : 'padding: 0 0 30% 2%'}">
+                                        <div class="_cover" v-if="infolist.cover!=''">
+                                            <img v-bind="{src:infolist.cover}" >
+                                        </div> 
+                                        <div class="_content" v-bind="{style:infolist.cover ? '' : 'width:100%;margin-top: 0%;'}">
+                                            <div class="_first">
+                                                <span v-text="infolist.title"></span>
+                                            </div>
+                                            <div class="_second _graycolor">
+                                                <span v-text="formatContent(infolist.content,infolist.description)"></span>
+                                            </div>
+                                            <div class="_third _graycolor"> 
+                                                <span class="firstforumspan">
+                                                    <img class="iconheight"  src='{Resource:path src="static/images/newLive/good@2x.png"/}'>
+                                                    <span v-text="formatcount(infolist.thumbcount)"></span>
+                                                </span>
+                                                <span>
+                                                    <img class="iconheight"  src='{Resource:path src="static/images/newLive/comment@2x.png"/}'>
+                                                    <span v-text="formatcount(infolist.commentcount)"></span>
+                                                </span>
+                                                <div class="_thirdright">
+                                                    <span v-text="formatetimestamp(infolist.createtime)"></span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>            
+                    </div>  
+                    <!-- 直播 1个 -->
+                    <div class="_live _alldiv _alldivmargin" v-if="livelists[groupcount-1].length>0"> 
+                        <ul class="_listul">
+                            <li v-for="livelist in livelists[groupcount-1]" :code="livelist.id" :node="livelist.sortcount" class="_border _borderbottom">
+                                <div class="_title" >
+                                    <span class="_img _allimg"><img v-bind="{src:livelist.avatar}"></span>
+                                    <span class="_name" v-text="livelist.nickname"></span>
+                                </div>
+                                <div class="_category longimg"><img src='{Resource:path src="static/images/newLive/make live@2x.png"/}'></div>
+                                <div class="_iamge _allimg" style="position: relative;"   @click="liveDetail(livelist.id,livelist.userid)">
+                                    <img v-bind="{src:livelist.cover}">
+                                    <div class="_startbutton">
+                                        <img src='{Resource:path src="static/images/live/home_play@2x.png"/}'>
+                                    </div>
+                                </div>
+                                <div class="_body"  @click="liveDetail(livelist.id,livelist.userid)">
+                                    <div class="_first">
+                                        <span class="_theme spanhidder" v-text="livelist.theme"></span>
+                                        <span class="_field" v-text="livelist.field"></span>
+                                    <div ><span class="_introduction _graycolor" v-text="livelist.livedetail"></span></div>
+                                        <div class="_fee">
+                                            <span v-text="formatfee(livelist.fee)"></span>
+                                        </div>
+                                    </div>
+                                    <div class="_second">
+                                        <img  class="iconheight" src='{Resource:path src="static/images/live/people.png"/}'>
+                                        <span class="_joincount _graycolor" v-text="formatcount(livelist.joincount)"></span>
+                                        <div class="_livetime">
+                                            <span v-text="formattime(livelist.livetime)"></span>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </li>
+                        </ul>
+                    </div> 
+                    <!-- 后台编辑资讯 码客日报 1个 -->
+                    <div class="_info _alldiv">
+                         <ul class="_listul">
+                            <li v-for="infolist in infolists[groupcount-1]" :code="infolist.id" :node="infolist.sortcount" @click="jumpForumDetail(infolist.id)">
+                                <div class="_blank"></div>
+                                <div class="_li _border">
+                                    <div class="_title">
+                                        <span class="_img"><img v-bind="{src:infolist.userheadurl}"></span>
+                                        <span class="_name" v-text="infolist.username"></span>
+                                    </div>
+                                       <div class="_category longimg"><img src='{Resource:path src="static/images/newLive/make daily@2x.png"/}'></div>
+                                    <div class="_hr">
+                                        <hr>
+                                    </div>
+                                    <div class="_body _leftpadding">
+                                        <div class="_content" v-bind="{style:infolist.cover ? '' : 'width:99%'}"> 
+                                            <div class="_first">
+                                                <span v-text="infolist.title"></span>
+                                            </div>
+                                            <div class="_second _graycolor" >
+                                                <span v-text="infolist.description"  v-bind="{style:infolist.cover ? '' : 'width:20em;'}"></span>
+                                            </div>
+                                        </div>
+                                        <div class="_cover _allimg" v-if="infolist.cover!=''">
+                                            <img  class="forumimg" v-bind="{src:infolist.cover}">
+                                        </div>
+                                    </div>
+                                    <div class="_label _bluecolor_label">
+                                        <span  v-for="label in formatlabel(infolist.label)">
+                                            {{label}}
+                                        </span>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    <!-- 小视频 横排 2个 -->
+                    <div class="clear" v-for="line in shortvideoline[groupcount-1]">
+                        <div class="_shortvideo">
+                            <div class="_left _border" v-if="shortvideolist[groupcount-1][line-1].length>0" 
+                                @click="jumpShortVideo(shortvideolist[groupcount-1][line-1][0].id)"
+                                :code="shortvideolist[groupcount-1][line-1][0].id" :node="shortvideolist[groupcount-1][line-1][0].sortcount">
+                                <div class="_cover _allimg"><img v-bind="{src:shortvideolist[groupcount-1][line-1][0].cover}"></div>
+                                <div class="_videoduration" v-text='formatSeconds(shortvideolist[groupcount-1][line-1][0].videoseconds)'></div>
+                                <div class="_title"><span class="spanhidder" v-text="shortvideolist[groupcount-1][line-1][0].title"></span></div>
+                                <div class="_bottom _graycolor">             
+                                    <span  class="firstforumspan">
+                                        <img class="iconheight" src='{Resource:path src="static/images/newLive/good@2x.png"/}'>
+                                        <span v-text="formatcount(shortvideolist[groupcount-1][line-1][0].thumbcount)"></span>
+                                    </span>
+                                    <span>
+                                        <img class="iconheight"  src='{Resource:path src="static/images/newLive/comment@2x.png"/}'>
+                                        <span v-text="formatcount(shortvideolist[groupcount-1][line-1][0].commentcount)"></span>
+                                    </span>
+                                    <div class="_bottomright">
+                                        <img class="iconheight"  src='{Resource:path src="static/images/newLive/share@2x.png"/}'>
+                                        <span v-text="formatcount(shortvideolist[groupcount-1][line-1][0].sharecount)"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="_right _border"  v-if="shortvideolist[groupcount-1][line-1].length>1" 
+                                @click="jumpShortVideo(shortvideolist[groupcount-1][line-1][1].id)"  
+                                :code="shortvideolist[groupcount-1][line-1][1].id" :node="shortvideolist[groupcount-1][line-1][1].sortcount">
+                                <div class="_cover _allimg"><img v-bind="{src:shortvideolist[groupcount-1][line-1][1].cover}"></div>
+                                  <div class="_videoduration" v-text='formatSeconds(shortvideolist[groupcount-1][line-1][1].videoseconds)'></div>
+                                <div class="_title"><span class="spanhidder" v-text="shortvideolist[groupcount-1][line-1][1].title"></span></div>
+                                <div class="_bottom _graycolor">
+                                    <span  class="firstforumspan">
+                                        <img class="iconheight"  src='{Resource:path src="static/images/newLive/good@2x.png"/}'>
+                                        <span v-text="formatcount(shortvideolist[groupcount-1][line-1][1].thumbcount)"></span>
+                                    </span>
+                                    <span>
+                                        <img class="iconheight"  src='{Resource:path src="static/images/newLive/comment@2x.png"/}'>
+                                        <span v-text="formatcount(shortvideolist[groupcount-1][line-1][1].commentcount)"></span>
+                                    </span>
+                                    <div class="_bottomright">
+                                        <img class="iconheight"  src='{Resource:path src="static/images/newLive/share@2x.png"/}'>
+                                        <span v-text="formatcount(shortvideolist[groupcount-1][line-1][1].sharecount)"></span>
+                                    </div>
+                                </div>                    
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 招聘 1个 -->
+                    <div class="_forum _alldiv">
+                        <ul class="_listul">
+                            <li v-for="infolist in forumlists6[groupcount-1]" v-bind='{code:infolist.id}' @click="jumpForumDetail(infolist.id)">
+                                <div class="_blank"></div>
+                                <div class="_li _border" style="min-height:10em;">
+                                    <div class="_title">
+                                        <span class="_img"><img v-bind="{src:infolist.userheadurl}"></span>
+                                        <span class="_name spanhidder" v-text="infolist.username"></span>
+                                    </div>
+<!--                                       <div class="_category"><img src='{Resource:path src="static/images/newLive/project@2x.png"/}' ></div>-->
+                                    <div class="_hr">
+                                        <hr>
+                                    </div>
+                                    <div class="_body" v-bind="{style:infolist.cover ? '' : 'padding: 0 0 30% 2%'}">
+                                        <div class="_cover" v-if="infolist.cover!=''">
+                                            <img v-bind="{src:infolist.cover}" >
+                                        </div> 
+                                        <div class="_content" v-bind="{style:infolist.cover ? '' : 'width:100%;margin-top: 0%;'}">
+                                            <div class="_first">
+                                                <span v-text="infolist.title"></span>
+                                            </div>
+                                            <div class="_second _graycolor">
+                                                <span v-text="formatContent(infolist.content,infolist.description)"></span>
+                                            </div>
+                                            <div class="_third _graycolor"> 
+                                                <span class="firstforumspan">
+                                                    <img class="iconheight"  src='{Resource:path src="static/images/newLive/good@2x.png"/}'>
+                                                    <span v-text="formatcount(infolist.thumbcount)"></span>
+                                                </span>
+                                                <span>
+                                                    <img class="iconheight"  src='{Resource:path src="static/images/newLive/comment@2x.png"/}'>
+                                                    <span v-text="formatcount(infolist.commentcount)"></span>
+                                                </span>
+                                                <div class="_thirdright">
+                                                    <span v-text="formatetimestamp(infolist.createtime)"></span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>            
+                    </div>
+                </div>
+            </div> 
+        </div> 
+
+        <ul class="wxLiveNav clear">
+            <li class="fl">
+                <p class="wxLiveNavIcon">
+                    <img src='{Resource:path src="static/images/live/home_s@2x.png"/}'  />
+                </p>
+                <p class="col_blue1">首页</p>
+            </li>
+            <li class="fl">
+                <!-- <a href="javascript:window.scrollTo(0,0)"> -->
+                <a >
+                    <p class="wxLiveNavIcon publishIcon">
+                        <img id="publishIconimg" @click="publishForum()" src='{Resource:path src="static/images/live/release@3x.png"/}'/>
+                        <img  id="closeimg" @click="closezhezhao()" src='{Resource:path src="static/images/live/rel_cancel@3x.png"/}' style="display: none;" />
+                    </p>
+                    <p class="col_999">发布</p>
+                </a>
+            </li>
+            <li class="fl" onclick="window.location.href='{$Think.config.common.url_root}users'">
+                <p class="wxLiveNavIcon">
+                    <img src='{Resource:path src="static/images/live/my_n@2x.png"/}' />
+                </p>
+                <p class="col_999">我的</p>
+            </li>
+        </ul>
+     
+        <audio id="chatAudioIndex">
+            <source  src='{Resource:path src="static/mp3/flyc.mp3"/}' type="audio/mpeg">
+        </audio>
+    </div>
+
+<!--     <div class="_back">
+        <div class="_top"></div>            
+    </div> -->
+{/block}
+{block name="scripts"}
+<script src='{Resource:path src="static/libs/thirdparty/vas/swiper.min.js"/}'></script>
+<script src='{Resource:path src="static/libs/thirdparty/vas/vue-awesome-swiper.js"/}'></script>
+<script type="text/javascript" src='{Resource:path src="static/js/dist/dropload.min.js"/}'></script>
+<script type="text/javascript" src='{Resource:path src="static/js/live/newindex.js?ver=qsfb_4"/}'></script>
+<script type="text/javascript" src='{Resource:path src="static/js/commonshare.js"/}'></script>
+<script type="text/javascript" src='{Resource:path src="static/js/jquery.cookie.min.js?ver=qsfb_3"/}'></script>
+<script>
+    $.cookie('lasturl_index',1, { expires: 7, path: '/'  }); //设置页面一个参数，用于确定帖子详情页面是如何跳转进来的，从首页进来有推荐，个人中心进来没有推荐
+    //console.log('lasturl_index:'+$.cookie('lasturl_index'));
+</script> 
+{/block}
+
+

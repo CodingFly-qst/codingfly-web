@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta content="telephone=no, address=no" name="format-detection" />
+<!--    <title>微信直播</title>-->
+    <link rel="stylesheet" href='{Resource:path src="static/css/reset.css" type="text/css"/}'/>
+    <link rel="stylesheet" href='{Resource:path src="static/libs/thirdparty/element-ui/theme-default/index.css"/}'>
+    <!-- 必要的js文件，提前引用 -->
+    <script type="text/javascript" src='{Resource:path src="static/js/jquery-2.1.4.min.js"/}'></script>
+    {block name="stylesheets"}{/block}    
+    {block name="scripts_bind"}{/block}  <!-- 可能存在一些需要提前绑定的js文件 -->
+</head>
+<body>
+    {block name="body"}{/block}
+    <script type="text/javascript" src='{Resource:path src="static/js/weixin/jweixin-1.0.0.js"/}'></script>
+    <script type="text/javascript">
+        var qConfig = {
+            apiUrl: '{$Think.config.common.url_root}',
+            uid:'{$uid|default=""}',
+            nickname:'{$nickname|default=""}',
+            avatar:'{$avatar|default=""}',
+            userSign:'{$usersign|default=""}',
+            adminSign:'{$adminSign|default=""}',
+            rootUrl:'{$rootUrl|default=""}',
+            account:'{$useraccount|default=""}',
+        };
+        wx.config({
+            debug: false,
+            appId: '{$appId|default=""}',
+            timestamp: '{$timestamp|default=""}',
+            nonceStr: '{$nonceStr|default=""}',
+            signature: '{$signature|default=""}',
+            jsApiList: [
+              'checkJsApi',
+              'onMenuShareTimeline',
+              'onMenuShareAppMessage',
+              'onMenuShareQQ',
+              'onMenuShareWeibo',
+              'onMenuShareQZone',
+              'hideMenuItems',
+              'showMenuItems',
+              'hideAllNonBaseMenuItem',
+              'showAllNonBaseMenuItem',
+              'translateVoice',
+              'startRecord',
+              'stopRecord',
+              'onRecordEnd',
+              'playVoice',
+              'pauseVoice',
+              'stopVoice',
+              'uploadVoice',
+              'downloadVoice',
+              'chooseImage',
+              'previewImage',
+              'uploadImage',
+              'downloadImage',
+              'getNetworkType',
+              'openLocation',
+              'getLocation',
+              'hideOptionMenu',
+              'showOptionMenu',
+              'closeWindow',
+              'scanQRCode',
+              'chooseWXPay',
+              'openProductSpecificView',
+              'addCard',
+              'chooseCard',
+              'openCard'
+            ]
+        });
+    </script>
+    <!-- <script type="text/javascript" src='{Resource:path src="static/js/jquery-2.1.4.min.js"/}'></script> -->
+    <script type="text/javascript" src='{Resource:path src="static/libs/thirdparty/vue.js"/}'></script>
+    <script type="text/javascript" src='{Resource:path src="static/libs/thirdparty/element-ui/index.js"/}'></script>
+    <script type="text/javascript" src='{Resource:path src="static/js/qst-services.js"/}'></script>
+    <script type="text/javascript" src='{Resource:path src="static/js/common.js"/}'></script>
+    {block name="scripts"}{/block}
+</body>
+</html>

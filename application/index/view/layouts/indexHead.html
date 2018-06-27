@@ -1,0 +1,37 @@
+
+    <!-- nav -->
+    <div style="background: #fff;">
+        <div class="mainAuto nav indexPc clear">
+            <p class="index_logo fl cursor" onclick="window.location.href='{$Think.config.common.url_root}index'">
+                <img src='{Resource:path src="static/images/logo.png"}' />
+            </p>
+            <ul class="index_login fr" v-cloak>
+                <li onclick="window.location.href='{$Think.config.common.url_root}index'">首页<em>|</em></li>
+                <li onclick="window.location.href='{$Think.config.common.url_root}projects'">项目大厅<em>|</em></li>
+                {switch name="isLogin|default = 0"}
+                    {case value='1'}
+                        <li onclick="window.location.href='{$Think.config.common.url_root}home/{$uid}/messages'">
+                            <img src='{Resource:path src="static/images/index/navigation_remind_n.png"}' />
+                            <font class="count-unread" v-text="messageCount"></font>
+                            <em>|</em>
+                        </li>
+                        <li class="userImg"><span v-text="display"></span>
+                            <img :src="avatar"/>
+                            <div class="index_login_box">
+                                <p class="goUser" onclick="window.location.href='{$Think.config.common.url_root}home/{$uid}'">个人中心</p>
+                                <p class="goQuit" onclick="window.location.href = '{$Think.config.common.url_root}login/logout?goto={$Think.config.common.url_root}index'">退出登录</p>
+                            </div>
+                        </li>
+                    {/case}
+                    {case value='0'}
+                        <li onclick="window.location.href='{$Think.config.common.url_root}weblogin/login?return={$fullUrl}'">
+                        登录<em>|</em></li>
+                        <li onclick="window.open('{$Think.config.common.url_root}login/register')">注册</li>
+                    {/case}
+                {/switch}
+            </ul>
+        </div>
+    </div>
+    <div class="mask"></div>
+    
+    

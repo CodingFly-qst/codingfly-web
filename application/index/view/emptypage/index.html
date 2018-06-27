@@ -1,0 +1,18 @@
+{extend name="base_wx" /}
+{block name="stylesheets"}
+<title>404</title>
+<style>
+    .noText{width: 45%;margin: 0 auto;padding-top: 50px;padding-bottom: 50px;}
+    .noText img{width: 100%;height: auto;}
+</style>
+{/block}
+{block name="body"}
+    <div class="wxcontent">
+        <p class="noText">
+            <img src='{Resource:path src="static/images/empty.png"/}' />
+        </p>
+    </div>
+{/block}
+{block name="scripts"}
+<script type="text/javascript" src='{Resource:path src="static/js/live/share.js"/}'></script>
+{/block}
