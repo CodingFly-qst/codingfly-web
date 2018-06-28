@@ -2,7 +2,6 @@
 namespace app\index\controller;
 
 use app\index\base\ControllerBase;
-use lives\qqlive;
 use think\Db;
 
 class Live extends ControllerBase
@@ -33,7 +32,7 @@ class Live extends ControllerBase
     {
         $result = array();
         $this->assign('banner',$result);
-        echo '基础版本';exit;
+        echo 'Codingfly';exit;
         // return $this->view->fetch();
     }
 }

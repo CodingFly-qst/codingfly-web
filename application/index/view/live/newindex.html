@@ -2,7 +2,6 @@
 {block name="stylesheets"}
 <title>CodingFly</title>
 <link href='{Resource:path src="static/libs/thirdparty/vas/swiper.min.css"/}' rel="stylesheet">
-<!-- <link rel="stylesheet" href='{Resource:path src="static/js/dist/dropload.css"/}' type="text/css"/> 重复了，在newindex.css有定义 -->  
 <link rel="stylesheet" href='{Resource:path src="static/css/live/newIndex.css?ver=qsfb_4"/}' type="text/css"/>
 {/block}
 {block name="body"}
@@ -11,10 +10,8 @@
             <ul id="wxLiveIndexNav" class="wxLiveIndexNav clear"><!--1关注，2最新，3最热，4直播，5视频，6日报，7文章，8项目，10招聘-->
                 <li @click="liveSortType(1)" v-bind="{class:sorttype ==1?'wxLiveIndexNavActive':''}">关注</li>
                 <li @click="liveSortType(2)" v-bind="{class:sorttype ==2?'wxLiveIndexNavActive':''}">最新</li>
-<!--                <li @click="liveSortType(3)" v-bind="{class:sorttype ==3?'wxLiveIndexNavActive':''}">最热</li>-->
                 <li @click="liveSortType(6)" v-bind="{class:sorttype ==6?'wxLiveIndexNavActive':''}">日报</li>
                 <li @click="liveSortType(7)" v-bind="{class:sorttype ==7?'wxLiveIndexNavActive':''}">文章</li>
-<!--                <li @click="liveSortType(8)" v-bind="{class:sorttype ==8?'wxLiveIndexNavActive':''}">项目</li>-->
                 <li @click="liveSortType(10)" v-bind="{class:sorttype ==10?'wxLiveIndexNavActive':''}">招聘</li>
                 <li @click="liveSortType(4)" v-bind="{class:sorttype ==4?'wxLiveIndexNavActive':''}">直播</li>
                 <li @click="liveSortType(5)" v-bind="{class:sorttype ==5?'wxLiveIndexNavActive':''}">视频</li>
